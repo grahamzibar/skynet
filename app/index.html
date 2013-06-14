@@ -1,0 +1,65 @@
+<!doctype html>
+<html class="Loading">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>SkyNet Interface</title>
+		
+		<link rel="stylesheet" type="text/css" href="css/styles.css" />
+	</head>
+
+	<body>
+		<!-- Viewport START -->
+		<script type="text/javascript">
+		<!--
+			(function() {
+				var meta = document.createElement("meta");
+				meta.setAttribute('name','viewport');
+				var content = 'initial-scale=';
+				content += 1 / window.devicePixelRatio;
+				content += ',user-scalable=no';
+				meta.setAttribute('content', content);
+				document.getElementsByTagName('head')[0].appendChild(meta);
+			})();
+		//-->
+		</script>
+		<!-- Viewport END -->
+		<div class="Loader">
+			<div class="Indicator"></div>
+			<div class="Progress">Please Wait</div>
+		</div>
+		
+		<video id="video_feed" class="VideoFeed"></video>
+		
+		<div class="AltitudeControl">
+			<div class="Control"></div>
+		</div>
+		
+		<div class="Interface">
+			<ul id="status_feedback" class="StatusFeedback">
+				<li class="Battery">100%</li>
+				<li class="Altitude">0m</li>
+				<li class="AngularSpeed">0</li><!-- Yaw?  -->
+				<li class="Pitch">0&deg;</li>
+				<li class="Roll">0&deg;</li>
+			</ul>
+			
+			<ol id="video_picker" class="VideoPicker">
+				<li><input type="radio" name="VideoOption" value="1" /><label>1</label></li>
+				<li><input type="radio" name="VideoOption" value="2" /><label>2</label></li>
+				<li><input checked type="radio" name="VideoOption" value="3" /><label>OFF</label></li>
+			</ol>
+			
+			<div id="flight_controls" class="FlightControls">
+				<a class="Fly" href="#">Fly</a>
+				<a class="Land" href="#">Land</a>
+			</div>
+			
+			<a class="PanicButton" href="#">Stop!</a>
+		</div>
+		
+		<script type="text/javascript" src="SkyNet.js"></script>
+		<script type="text/javascript" src="SkyNetView.js"></script>
+		<script type="text/javascript" src="SkyNetController.js"></script>
+		<script type="text/javascript" src="main.js"></script>
+	</body>
+</html>
