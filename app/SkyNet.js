@@ -30,21 +30,7 @@ satisfies the same interface) to send and receive commands to and fro the drone.
 		find the Public SkyNet class and its API below this section.
 		
 	*/
-	// Static class for sequencing (might make this static methods on Command)
-	var Sequence = new (function Sequence() {
-		var _sequence = 0;
-		
-		this.next = function() {
-			return ++_sequence;
-		};
-		
-		this.reset = function() {
-			_sequence = 0;
-		};
-	})();
-	//
-	
-	// Socket Classes
+	// SOCKET CLASSES
 	function Socket(port, protocol, type) {
 		this.socketID = null;
 		this.port = port;
@@ -81,17 +67,17 @@ satisfies the same interface) to send and receive commands to and fro the drone.
 	};
 	//
 	
-	// Maintains data for sending commands to the drone
-	function Command = function(command, parts) {
+	// COMMAND CLASSES
+	function Command(command, parts) {
 		this.command = command;
 		this.parts = parts;
 		
-		// override default toString function
+		// override default toString()
 		this.toString = function() {
 			var rtrnMe = 'AT*';
 			rtrnMe += this.command;
 			rtrnMe += '=';
-			rtrnMe += Sequence.next();
+			rtrnMe += ++Command.sequence;
 			if (parts) {
 				rtrnMe += ',';
 				rtrnMe += parts.join(',');
@@ -99,9 +85,10 @@ satisfies the same interface) to send and receive commands to and fro the drone.
 			}
 		};
 	};
+	Command.sequence = 0;
 	
 	
-	function FlightCommand = function(mode) {
+	function FlightCommand(mode) {
 		this.inheritFrom = Command;
 		this.inheritFrom('REF', [mode]);
 		delete this.inheritFrom;
@@ -110,7 +97,7 @@ satisfies the same interface) to send and receive commands to and fro the drone.
 	FlightCommand.LAND = 290717696;
 	
 	
-	function ConfigCommand = function(option, value) {
+	function ConfigCommand(option, value) {
 		this.inheritFrom = Command;
 		this.inheritFrom('CONFIG', [option, '"' + value + '"']);
 		delete this.inheritFrom;
@@ -124,7 +111,7 @@ satisfies the same interface) to send and receive commands to and fro the drone.
 	];
 	
 	
-	function NavCommand = function(enabled, verticalSpeed, angularSpeed, frontBackTilt, leftRightTilt) {
+	function NavCommand(enabled, verticalSpeed, angularSpeed, frontBackTilt, leftRightTilt) {
 		this.inheritFrom = Command;
 		this.inheritFrom('PCMD', [
 			(enabled ? 1 : 0),
@@ -137,9 +124,32 @@ satisfies the same interface) to send and receive commands to and fro the drone.
 	};
 	//
 	
-	// Event Classes
-	function SkyNetEvent() {
-		// Put stuff here for controls and views and junk
+	// EVENT CLASSES
+	function SkyNetDataEvent(rawData) {
+		var dataView = new DataView(rawData);
+		var start = 16;
+		
+		this.controlState;
+		this.batteryPercentage;
+		this.theta;
+		this.phi;
+		this.psi;
+		this.altitude;
+		this.vx;
+		this.vy;
+		this.vz;
+		
+		if (start + 36 <= rawData.byteLength) {
+			this.controlState = dataView.getUint32(start + 4, true);
+			this.batteryPercentage = dataView.getUint32(start + 8, true);
+			this.theta = dataView.getFloat32(start + 12, true);
+			this.phi = dataView.getFloat32(start + 16, true);
+			this.psi = dataView.getFloat32(start + 20, true);
+			this.altitude = dataView.getInt32(start + 24, true);
+			this.vx = dataView.getFloat32(start + 28, true);
+			this.vy = dataView.getFloat32(start + 32, true);
+			this.vz = dataView.getFloat32(start + 36, true);
+		}
 	};
 	//
 	/**/
@@ -147,7 +157,7 @@ satisfies the same interface) to send and receive commands to and fro the drone.
 	/*
 	****************************************************************************
 	
-		K, now for the MOST important part.  The SKYNET part.  The MODEL!
+		OK, now for the MOST important part.  The SKYNET part.  The MODEL!
 	
 	****************************************************************************
 	*/
@@ -203,17 +213,8 @@ satisfies the same interface) to send and receive commands to and fro the drone.
 		};
 		
 		var onDataReveived = function(e) {
-			if (e.data.byteLength > 0) {
-				// Here must parse data kind of like so:
-				/*
-					navData.parseData(data.data);
-					if (debug && prevState != navData.data.controlState) {
-						console.log(navData.data);
-						prevState = navData.data.controlState;
-					}
-				*/
-				__self__.dispatchEvent(SkyNet.DATA_RECEIVED, new SkyNetEvent());
-			}
+			if (e.data.byteLength > 0)
+				__self__.dispatchEvent(SkyNet.DATA_RECEIVED, new SkyNetEvent(e.data));
 		};
 		
 		var sendKeepAliveCommand = function() {
@@ -238,13 +239,13 @@ satisfies the same interface) to send and receive commands to and fro the drone.
 		
 		var sendOutdoors = function(isOutdoors) {
 			sendCommands([
-				new ConfigCommand(ConfigCommand.OPTIONS[3], isOutdoors ? 'TRUE' : 'FALSE');
+				new ConfigCommand(ConfigCommand.OPTIONS[3], isOutdoors ? 'TRUE' : 'FALSE')
 			]);
 		};
 		
 		var sendAllNavData = function() {
 			sendCommands([
-				new ConfigCommand(ConfigCommand.OPTIONS[4], 'FALSE');
+				new ConfigCommand(ConfigCommand.OPTIONS[4], 'FALSE')
 			]);
 		};
 		
@@ -334,7 +335,7 @@ satisfies the same interface) to send and receive commands to and fro the drone.
 			_frontBackTilt = RESET;
 			_leftRightTilt = RESET;
 			_angularSpeed = RESET;
-			__self__.dispatchEvent(SkyNet.PANIC, new SkyNetEvent());
+			__self__.dispatchEvent(SkyNet.PANIC);
 		};
 		//
 		

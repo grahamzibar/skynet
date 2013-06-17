@@ -12,7 +12,7 @@ extensions so this can be packaged as a chrome app).
 
 **Requires**
 	SocketInterface
-		(not a file to include.  Just an interface you need to account for...)
+		Not a file to include.  Just an interface you need to account for...
 
 */
 
@@ -27,7 +27,7 @@ extensions so this can be packaged as a chrome app).
 		this.data = data;
 	};
 	
-	function InitializedEvent = function(success) {
+	function InitializedEvent(success) {
 		this.success = success;
 		// usually false if there's no WiFi
 	};
@@ -45,17 +45,11 @@ extensions so this can be packaged as a chrome app).
 			// Show a toast if we have not.  Once we're connected, 
 		};
 		
-		var onSocketConnected = function(e, callback) {
-			// callback(new SocketConnectedEvent(e.socketID));
-		};
-		
-		var onDataReceived = function(e, callback) {
-			// callback(new DataReceivedEvent(e.socketID, e.data));
-		};
-		
 		this.connectSocket = function(socket, callback) {
-			var ip = socketInterface.type == 'bind' ? _clientIP : _droneIP;
+			var ip = socket.type == 'bind' ? _clientIP : _droneIP;
 			// Call BlackBerry 10 custom extension
+			socket.id = 'TEST';
+			callback(new SockedConnectedEvent(socket.id));
 		};
 		
 		this.send = function(socket, data) {
@@ -63,14 +57,14 @@ extensions so this can be packaged as a chrome app).
 		};
 		
 		this.read = function(socket, callback) {
-			
+			callback(new DataReceivedEvent(socket.id, 'HELLO WORLD'));
 		};
 		
 		this.init = function(callback) {
 			// Any prep that needs to be done.  Here, it's mostly checking to
 			// see if WebWorks is ready and then fetching the client's
 			// IP Address for socketing purposes.
-			// callback(new InitializedEvent);
+			callback(new InitializedEvent);
 		};
 	};
 })();

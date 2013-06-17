@@ -12,6 +12,10 @@ actions to be performed upon the model.
 	SkyNetView
 
 */
-function SkyNetController = function(model, view) {
+function SkyNetController(model, view) {
+	var constructor = function() {
+		view.land();
+	};
 	
+	constructor();
 };
