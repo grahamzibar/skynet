@@ -11,12 +11,12 @@ BlackBerry 10's native layer or some other class that perhaps uses Chrome
 extensions so this can be packaged as a chrome app).
 
 **Requires**
-SocketInterface
-	(not a file to include.  Just an interface you need to
-	account for...)
-EventDispatcher
+	SocketInterface
+		(not a file to include.  Just an interface you need to account for...)
 
 */
+
+// We won't be dispatching events anymore.. so how should we handle callbacks?
 (function privateStaticScope() {
 	function SocketConnectedEvent(socketID) {
 		this.socketID = socketID;
@@ -27,28 +27,34 @@ EventDispatcher
 		this.data = data;
 	};
 	
+	function InitializedEvent = function(success) {
+		this.success = success;
+		// usually false if there's no WiFi
+	};
+	
 	window.ARDroneCommunicator = function() {
-		var __self__ = this;
+		var _droneIP = '192.168.1.1';
+		var _clientIP = null;
 		
-		this.inheritFrom = EventDispatcher;
-		this.inheritFrom();
-		delete this.inheritFrom;
-		
-		var onSocketConnected = function(e) {
-			__self__.dispatchEvent(
-				ARDroneCommunicator.SOCKET_CONNECTED,
-				{}//new SocketConnectedEvent(e.socketID)
-			);
+		var getClientIP = function(callback) {
+			// ask our native layer what the ip address is of our device.
 		};
 		
-		var onDataReceived = function(e) {
-			__self__.dispatchEvent(
-				ARDroneCommunicator.DATA_RECEIVED,
-				{}//new DataReceivedEvent(e.socketID, e.data)
-			);
+		var isConnected = function() {
+			// Here, we must ensure we're connected via WiFi to our drone.
+			// Show a toast if we have not.  Once we're connected, 
 		};
 		
-		this.connect = function(socketInterface) {
+		var onSocketConnected = function(e, callback) {
+			// callback(new SocketConnectedEvent(e.socketID));
+		};
+		
+		var onDataReceived = function(e, callback) {
+			// callback(new DataReceivedEvent(e.socketID, e.data));
+		};
+		
+		this.connectSocket = function(socket, callback) {
+			var ip = socketInterface.type == 'bind' ? _clientIP : _droneIP;
 			// Call BlackBerry 10 custom extension
 		};
 		
@@ -56,7 +62,15 @@ EventDispatcher
 			// Call BlackBerry 10 custom extension
 		};
 		
+		this.read = function(socket, callback) {
+			
+		};
+		
+		this.init = function(callback) {
+			// Any prep that needs to be done.  Here, it's mostly checking to
+			// see if WebWorks is ready and then fetching the client's
+			// IP Address for socketing purposes.
+			// callback(new InitializedEvent);
+		};
 	};
-	ARDroneCommunicator.SOCKET_CONNECTED = 1;
-	ARDroneCommunicator.DATA_RECEIVED = 2;
 })();

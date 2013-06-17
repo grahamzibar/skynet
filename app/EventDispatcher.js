@@ -3,7 +3,7 @@
 EventDispatcher
 by Graham Robertson
 
-A uitility class I wrote to get 'er done.  Ya feel?  Ya feel.
+A utility class I wrote to get 'er done.  Ya feel?  Ya feel.
 
 */
 
