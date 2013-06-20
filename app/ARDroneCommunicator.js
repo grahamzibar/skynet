@@ -45,11 +45,11 @@ extensions so this can be packaged as a chrome app).
 			// Show a toast if we have not.  Once we're connected, 
 		};
 		
-		this.connectSocket = function(socket, callback) {
-			var ip = socket.type == 'bind' ? _clientIP : _droneIP;
+		this.connectSocket = function(isocket, callback) {
+			var ip = isocket.type == 'bind' ? _clientIP : _droneIP;
 			// Call BlackBerry 10 custom extension
-			socket.id = 'TEST';
-			callback(new SockedConnectedEvent(socket.id));
+			isocket.id = 'TEST';
+			callback(new SockedConnectedEvent(isocket.id));
 		};
 		
 		this.send = function(socket, data) {

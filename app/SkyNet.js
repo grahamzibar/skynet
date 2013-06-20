@@ -131,10 +131,12 @@ satisfies the same interface) to send and receive commands to and fro the drone.
 		
 		this.controlState;
 		this.batteryPercentage;
+		
 		this.theta;
 		this.phi;
 		this.psi;
 		this.altitude;
+		
 		this.vx;
 		this.vy;
 		this.vz;
@@ -142,10 +144,12 @@ satisfies the same interface) to send and receive commands to and fro the drone.
 		if (start + 36 <= rawData.byteLength) {
 			this.controlState = dataView.getUint32(start + 4, true);
 			this.batteryPercentage = dataView.getUint32(start + 8, true);
+			
 			this.theta = dataView.getFloat32(start + 12, true);
 			this.phi = dataView.getFloat32(start + 16, true);
 			this.psi = dataView.getFloat32(start + 20, true);
 			this.altitude = dataView.getInt32(start + 24, true);
+			
 			this.vx = dataView.getFloat32(start + 28, true);
 			this.vy = dataView.getFloat32(start + 32, true);
 			this.vz = dataView.getFloat32(start + 36, true);
